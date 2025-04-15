@@ -1,0 +1,187 @@
+#include <raylib.h>
+#include "grid.hpp"
+#include <iostream>
+
+#define RIGHT 201
+#define LEFT 160
+#define TOP 30
+#define DOWN 203
+#define REFRESH 0
+
+int MovePiece(int direction);
+bool DetectCollision(int direction);
+void DrawFallingPiece();
+
+Color bgColor = {44, 44, 127, 255}; // dark blue
+
+Grid grid;
+int pieceX;
+int pieceY;
+int pieceMatrix[4][4];
+	
+int counter;
+int speed = 95;
+
+int shapeI[4][4] = {
+	0,1,0,0,
+	0,1,0,0,
+	0,1,0,0,
+	0,1,0,0
+};
+
+int shapeT[4][4] = {
+	0,1,0,0,
+	0,1,1,0,
+	0,1,0,0,
+	0,0,0,0
+};
+
+int shapeL[4][4] = {
+	0,0,1,0,
+	1,1,1,0,
+	0,0,0,0,
+	0,0,0,0
+};
+
+int shapeL2[4][4] = {
+	1,0,0,0,
+	1,1,1,0,
+	0,0,0,0,
+	0,0,0,0
+};
+
+int shapeS[4][4] = {
+	0,1,1,0,
+	1,1,0,0,
+	0,0,0,0,
+	0,0,0,0
+};
+
+int shapeS2[4][4] = {
+	1,1,0,0,
+	0,1,1,0,
+	0,0,0,0,
+	0,0,0,0
+};
+
+int shapeO[4][4] = {
+	1,1,0,0,
+	1,1,0,0,
+	0,0,0,0,
+	0,0,0,0
+};
+
+int MovePiece(int direction){
+	switch(direction){
+		case RIGHT:
+			if(DetectCollision(RIGHT))
+				return 1;
+				// effectivelly move the block
+			
+			break;
+		case LEFT:
+			if(DetectCollision(LEFT))
+				return 1;
+
+			break;
+		case DOWN:
+			if(DetectCollision(DOWN))
+				return 1;
+			pieceY++;
+			// DrawFallingPiece();
+			break;
+		case REFRESH:
+			if(DetectCollision(REFRESH))
+				return 1;
+
+			break;
+	}
+	return 0;
+}
+
+void DrawFallingPiece(){
+	for(int i = 0; i < 4; i++){
+		for(int j = 0; j < 4; j++){
+			// grid.grid[pieceY + j][pieceX + i] = pieceMatrix[i][j];
+			if(pieceMatrix[i][j] == 0)
+				continue;
+			DrawRectangle((pieceX + i) * grid.cellSize + 1, (pieceY + j) * grid.cellSize + 1, grid.cellSize -1, grid.cellSize -1, grid.colors[2]);
+		}
+	}
+}
+
+bool DetectCollision(int direction){
+	int x, y;
+	int pX = pieceX;
+	int pY = pieceY;
+	bool collision = false;
+
+	switch(direction){
+		case RIGHT:
+			pX++;
+			break;
+		case LEFT:
+			pX--;
+			break;
+		case DOWN:
+			pY++;
+			break;
+		default:
+			break;
+	}
+
+	// check left boundaries
+	if(pX < 0){
+		for(x = 0; x < 4; x++)
+			for(y = 0; y < 4; y++)
+				if(pieceMatrix[x][y] != 0)
+					collision = true;
+	}
+
+	// check right boundaries
+	if(pX > grid.numCols - 4){
+		for(x = pX + 3; x >= grid.numCols; x--)
+			for(y = 0; y < 4; y++)
+				if(pieceMatrix[x - pX][y] != 0)
+					collision = true;
+	}
+
+	// check bottom
+	for(x = 0; x < 4; x++)
+		for(y = 0; y < 4; y++)
+			if(grid.grid[pY + y][pX + x] != 0 && pieceMatrix[x][y] != 0 || ((pY + y) >= grid.numRows && pieceMatrix[x][y] != 0))
+				collision = true;
+
+	std::cout << "collision: " << collision << "\npyy: " << (pY + y) << std::endl;
+	return collision;
+}
+
+int main(){
+	InitWindow(300, 600, "Tetris clone");
+	SetTargetFPS(60);
+
+	grid = Grid();
+	pieceX = (int)(grid.numCols / 2);
+	pieceY = 0;
+
+	for(int i = 0; i < 4; i++)
+		for(int j = 0; j < 4; j++)
+			pieceMatrix[i][j] = shapeT[i][j];
+	
+	while(WindowShouldClose() == false){
+		if(++counter >= speed){
+			counter = 0;
+			MovePiece(DOWN);
+		}
+		// std::cout << "counter: " << counter << "\nspeed: " << speed << std::endl;
+
+		BeginDrawing();
+		ClearBackground(bgColor);
+		grid.Draw();
+		DrawFallingPiece();
+
+		EndDrawing();
+	
+	}
+	CloseWindow();
+}
