@@ -1,6 +1,7 @@
 #include <raylib.h>
 #include "grid.hpp"
 #include <iostream>
+#include <ctime>
 
 #define RIGHT 201
 #define LEFT 160
@@ -11,6 +12,7 @@
 int MovePiece(int direction);
 bool DetectCollision(int direction);
 void DrawFallingPiece();
+void GeneratePiece();
 
 Color bgColor = {44, 44, 127, 255}; // dark blue
 
@@ -105,7 +107,7 @@ void DrawFallingPiece(){
 			// grid.grid[pieceY + j][pieceX + i] = pieceMatrix[i][j];
 			if(pieceMatrix[i][j] == 0)
 				continue;
-			DrawRectangle((pieceX + i) * grid.cellSize + 1, (pieceY + j) * grid.cellSize + 1, grid.cellSize -1, grid.cellSize -1, grid.colors[2]);
+			DrawRectangle((pieceX + i) * grid.cellSize + 1, (pieceY + j) * grid.cellSize + 1, grid.cellSize -1, grid.cellSize -1, grid.colors[pieceMatrix[i][j]]);
 		}
 	}
 }
@@ -152,8 +154,42 @@ bool DetectCollision(int direction){
 			if(grid.grid[pY + y][pX + x] != 0 && pieceMatrix[x][y] != 0 || ((pY + y) >= grid.numRows && pieceMatrix[x][y] != 0))
 				collision = true;
 
-	std::cout << "collision: " << collision << "\npyy: " << (pY + y) << std::endl;
+	// std::cout << "collision: " << collision << "\npyy: " << (pY + y) << std::endl;
 	return collision;
+}
+
+void GeneratePiece(){
+	srand(time(0));
+
+	int color = (rand() % 6) + 1; //start at 1
+	int shape = rand() % 6;
+
+	for(int i = 0; i < 4; i++)
+		for(int j = 0; j < 4; j++)
+			switch(shape){
+				case 0:
+					pieceMatrix[j][i] = shapeI[j][i] * color;
+					break;
+				case 1:
+					pieceMatrix[j][i] = shapeL[j][i] * color;
+					break;
+				case 2:
+					pieceMatrix[j][i] = shapeL2[j][i] * color;
+					break;
+				case 3:
+					pieceMatrix[j][i] = shapeO[j][i] * color;
+					break;
+				case 4:
+					pieceMatrix[j][i] = shapeS[j][i] * color;
+					break;
+				case 5:
+					pieceMatrix[j][i] = shapeS2[j][i] * color;
+					break;
+				case 6:
+					pieceMatrix[j][i] = shapeT[j][i] * color;
+					break;
+			}
+	// std::cout << "color value: " << color << std::endl;
 }
 
 int main(){
@@ -164,10 +200,8 @@ int main(){
 	pieceX = (int)(grid.numCols / 2);
 	pieceY = 0;
 
-	for(int i = 0; i < 4; i++)
-		for(int j = 0; j < 4; j++)
-			pieceMatrix[i][j] = shapeT[i][j];
-	
+	GeneratePiece();
+
 	while(WindowShouldClose() == false){
 		if(++counter >= speed){
 			counter = 0;
