@@ -22,7 +22,7 @@ int pieceY;
 int pieceMatrix[4][4];
 	
 int counter;
-int speed = 95;
+int speed = 35;
 
 int shapeI[4][4] = {
 	0,1,0,0,
@@ -78,24 +78,21 @@ int MovePiece(int direction){
 		case RIGHT:
 			if(DetectCollision(RIGHT))
 				return 1;
-				// effectivelly move the block
-			
+			pieceX++;
 			break;
 		case LEFT:
 			if(DetectCollision(LEFT))
 				return 1;
-
+			pieceX--;
 			break;
 		case DOWN:
 			if(DetectCollision(DOWN))
 				return 1;
 			pieceY++;
-			// DrawFallingPiece();
 			break;
 		case REFRESH:
 			if(DetectCollision(REFRESH))
 				return 1;
-
 			break;
 	}
 	return 0;
@@ -107,7 +104,9 @@ void DrawFallingPiece(){
 			// grid.grid[pieceY + j][pieceX + i] = pieceMatrix[i][j];
 			if(pieceMatrix[i][j] == 0)
 				continue;
-			DrawRectangle((pieceX + i) * grid.cellSize + 1, (pieceY + j) * grid.cellSize + 1, grid.cellSize -1, grid.cellSize -1, grid.colors[pieceMatrix[i][j]]);
+			else{
+				DrawRectangle((pieceX + i) * grid.cellSize + 1, (pieceY + j) * grid.cellSize +1, grid.cellSize -1, grid.cellSize -1, grid.colors[pieceMatrix[i][j]]);
+			}
 		}
 	}
 }
@@ -136,7 +135,7 @@ bool DetectCollision(int direction){
 	if(pX < 0){
 		for(x = 0; x < 4; x++)
 			for(y = 0; y < 4; y++)
-				if(pieceMatrix[x][y] != 0)
+				if(pieceMatrix[y][x] != 0)
 					collision = true;
 	}
 
@@ -144,7 +143,7 @@ bool DetectCollision(int direction){
 	if(pX > grid.numCols - 4){
 		for(x = pX + 3; x >= grid.numCols; x--)
 			for(y = 0; y < 4; y++)
-				if(pieceMatrix[x - pX][y] != 0)
+				if(pieceMatrix[y][x - pX] != 0)
 					collision = true;
 	}
 
@@ -164,8 +163,8 @@ void GeneratePiece(){
 	int color = (rand() % 6) + 1; //start at 1
 	int shape = rand() % 6;
 
-	for(int i = 0; i < 4; i++)
-		for(int j = 0; j < 4; j++)
+	for(int i = 0; i < 4; i++){
+		for(int j = 0; j < 4; j++){
 			switch(shape){
 				case 0:
 					pieceMatrix[j][i] = shapeI[j][i] * color;
@@ -189,6 +188,11 @@ void GeneratePiece(){
 					pieceMatrix[j][i] = shapeT[j][i] * color;
 					break;
 			}
+			std::cout << pieceMatrix[j][i] * color << ", ";
+		}
+		std::cout << std::endl;
+	}
+
 	// std::cout << "color value: " << color << std::endl;
 }
 
