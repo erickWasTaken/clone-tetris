@@ -8,6 +8,7 @@ public:
 	void Initialize();
 	void Print();
 	void Draw();
+	void Insert(int pieceX, int pieceY, int shape[4][4]);
 	int grid[20][10];
 	int numRows;
 	int numCols;

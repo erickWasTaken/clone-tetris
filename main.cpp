@@ -13,6 +13,8 @@ int MovePiece(int direction);
 bool DetectCollision(int direction);
 void DrawFallingPiece();
 void GeneratePiece();
+void PlacePiece();
+void ProcessInput();
 
 Color bgColor = {44, 44, 127, 255}; // dark blue
 
@@ -22,8 +24,11 @@ int pieceY;
 int pieceMatrix[4][4];
 	
 int counter;
-int speed = 35;
+int fallingSpeed = 35;
 int cycle = 0;
+
+int inputRepeatLatency = 5;
+int inputRepeatCounter = 0;
 
 int shapeI[4][4] = {
 	0,1,0,0,
@@ -116,7 +121,6 @@ bool DetectCollision(int direction){
 	int x, y;
 	int pX = pieceX;
 	int pY = pieceY;
-	bool collision = false;
 
 	switch(direction){
 		case RIGHT:
@@ -136,26 +140,32 @@ bool DetectCollision(int direction){
 	if(pX < 0){
 		for(x = 0; x < 4; x++)
 			for(y = 0; y < 4; y++)
-				if(pieceMatrix[x][y] != 0)
-					collision = true;
+				if(pieceMatrix[x][y] != 0){
+					PlacePiece();
+					return true;
+				}
 	}
 
 	// check right boundaries
 	if(pX > grid.numCols - 4){
 		for(x = pX + 3; x >= grid.numCols; x--)
 			for(y = 0; y < 4; y++)
-				if(pieceMatrix[x - pX][y] != 0)
-					collision = true;
+				if(pieceMatrix[x - pX][y] != 0){
+					PlacePiece();
+					return true;
+				}
 	}
 
 	// check bottom
 	for(x = 0; x < 4; x++)
 		for(y = 0; y < 4; y++)
-			if(grid.grid[pY + y][pX + x] != 0 && pieceMatrix[x][y] != 0 || ((pY + y) >= grid.numRows && pieceMatrix[x][y] != 0))
-				collision = true;
+			if(grid.grid[pY + y][pX + x] != 0 && pieceMatrix[x][y] != 0 || ((pY + y) >= grid.numRows && pieceMatrix[x][y] != 0)){
+				PlacePiece();
+				return true;
+			}
 
 	// std::cout << "collision: " << collision << "\npyy: " << (pY + y) << std::endl;
-	return collision;
+	return false;
 }
 
 void GeneratePiece(){
@@ -189,12 +199,63 @@ void GeneratePiece(){
 					pieceMatrix[j][i] = shapeT[i][j] * color;
 					break;
 			}
-			std::cout << pieceMatrix[j][i] * color << ", ";
+			// std::cout << pieceMatrix[j][i] * color << ", ";
 		}
-		std::cout << std::endl;
+		// std::cout << std::endl;
 	}
 
 	// std::cout << "color value: " << color << std::endl;
+}
+
+void PlacePiece(){
+	int x, y;
+	int pX = pieceX;
+	int pY = pieceY;
+
+	grid.Insert(pieceX, pieceY, pieceMatrix);
+
+	for(x = 0; x < 4; x++)
+		for(y = 0; y < 4; y++)
+			pieceMatrix[y][x] = 0;
+
+	pieceX = (int)(grid.numCols / 2);
+	pieceY = 0;
+
+	GeneratePiece();
+}
+
+void ProcessInput(){
+	int keycode = GetKeyPressed();
+	if(keycode == 0)
+		return;
+
+	switch(keycode){
+		case KEY_H:
+			MovePiece(LEFT);
+			break;
+		case KEY_L:
+			MovePiece(RIGHT);
+			break;
+		case KEY_J:
+			break;
+	}
+
+	while(GetKeyPressed() != 0){
+		inputRepeatCounter++;
+		if(inputRepeatCounter >= inputRepeatLatency){
+			switch(keycode){
+				case KEY_H:
+					MovePiece(LEFT);
+					break;
+				case KEY_L:
+					MovePiece(RIGHT);
+					break;
+				case KEY_J:
+					break;
+			}
+			inputRepeatCounter = 0;
+		}
+	}
 }
 
 int main(){
@@ -208,14 +269,13 @@ int main(){
 	GeneratePiece();
 
 	while(WindowShouldClose() == false){
-		if(++counter >= speed){
+		if(++counter >= fallingSpeed){
 			counter = 0;
 			MovePiece(DOWN);
-
-			cycle++;
-			cycle % 2 == 1 ? MovePiece(RIGHT) : MovePiece(LEFT);
 		}
 		// std::cout << "counter: " << counter << "\nspeed: " << speed << std::endl;
+
+		ProcessInput();
 
 		BeginDrawing();
 		ClearBackground(bgColor);
@@ -225,6 +285,6 @@ int main(){
 		EndDrawing();
 	
 	}
-	std::cout << "last cycle: " << cycle << std::endl;
+	// std::cout << "last cycle: " << cycle << std::endl;
 	CloseWindow();
 }
