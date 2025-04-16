@@ -23,6 +23,7 @@ int pieceMatrix[4][4];
 	
 int counter;
 int speed = 35;
+int cycle = 0;
 
 int shapeI[4][4] = {
 	0,1,0,0,
@@ -135,7 +136,7 @@ bool DetectCollision(int direction){
 	if(pX < 0){
 		for(x = 0; x < 4; x++)
 			for(y = 0; y < 4; y++)
-				if(pieceMatrix[y][x] != 0)
+				if(pieceMatrix[x][y] != 0)
 					collision = true;
 	}
 
@@ -143,7 +144,7 @@ bool DetectCollision(int direction){
 	if(pX > grid.numCols - 4){
 		for(x = pX + 3; x >= grid.numCols; x--)
 			for(y = 0; y < 4; y++)
-				if(pieceMatrix[y][x - pX] != 0)
+				if(pieceMatrix[x - pX][y] != 0)
 					collision = true;
 	}
 
@@ -167,25 +168,25 @@ void GeneratePiece(){
 		for(int j = 0; j < 4; j++){
 			switch(shape){
 				case 0:
-					pieceMatrix[j][i] = shapeI[j][i] * color;
+					pieceMatrix[j][i] = shapeI[i][j] * color;
 					break;
 				case 1:
-					pieceMatrix[j][i] = shapeL[j][i] * color;
+					pieceMatrix[j][i] = shapeL[i][j] * color;
 					break;
 				case 2:
-					pieceMatrix[j][i] = shapeL2[j][i] * color;
+					pieceMatrix[j][i] = shapeL2[i][j] * color;
 					break;
 				case 3:
-					pieceMatrix[j][i] = shapeO[j][i] * color;
+					pieceMatrix[j][i] = shapeO[i][j] * color;
 					break;
 				case 4:
-					pieceMatrix[j][i] = shapeS[j][i] * color;
+					pieceMatrix[j][i] = shapeS[i][j] * color;
 					break;
 				case 5:
-					pieceMatrix[j][i] = shapeS2[j][i] * color;
+					pieceMatrix[j][i] = shapeS2[i][j] * color;
 					break;
 				case 6:
-					pieceMatrix[j][i] = shapeT[j][i] * color;
+					pieceMatrix[j][i] = shapeT[i][j] * color;
 					break;
 			}
 			std::cout << pieceMatrix[j][i] * color << ", ";
@@ -210,6 +211,9 @@ int main(){
 		if(++counter >= speed){
 			counter = 0;
 			MovePiece(DOWN);
+
+			cycle++;
+			cycle % 2 == 1 ? MovePiece(RIGHT) : MovePiece(LEFT);
 		}
 		// std::cout << "counter: " << counter << "\nspeed: " << speed << std::endl;
 
@@ -221,5 +225,6 @@ int main(){
 		EndDrawing();
 	
 	}
+	std::cout << "last cycle: " << cycle << std::endl;
 	CloseWindow();
 }
