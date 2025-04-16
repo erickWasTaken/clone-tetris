@@ -15,6 +15,7 @@ void DrawFallingPiece();
 void GeneratePiece();
 void PlacePiece();
 void ProcessInput();
+void SnapDown();
 
 Color bgColor = {44, 44, 127, 255}; // dark blue
 
@@ -83,25 +84,25 @@ int MovePiece(int direction){
 	switch(direction){
 		case RIGHT:
 			if(DetectCollision(RIGHT))
-				return 1;
+				return 0;
 			pieceX++;
 			break;
 		case LEFT:
 			if(DetectCollision(LEFT))
-				return 1;
+				return 0;
 			pieceX--;
 			break;
 		case DOWN:
 			if(DetectCollision(DOWN))
-				return 1;
+				return 0;
 			pieceY++;
 			break;
 		case REFRESH:
 			if(DetectCollision(REFRESH))
-				return 1;
+				return 0;
 			break;
 	}
-	return 0;
+	return 1;
 }
 
 void DrawFallingPiece(){
@@ -141,7 +142,6 @@ bool DetectCollision(int direction){
 		for(x = 0; x < 4; x++)
 			for(y = 0; y < 4; y++)
 				if(pieceMatrix[x][y] != 0){
-					PlacePiece();
 					return true;
 				}
 	}
@@ -151,7 +151,6 @@ bool DetectCollision(int direction){
 		for(x = pX + 3; x >= grid.numCols; x--)
 			for(y = 0; y < 4; y++)
 				if(pieceMatrix[x - pX][y] != 0){
-					PlacePiece();
 					return true;
 				}
 	}
@@ -160,7 +159,6 @@ bool DetectCollision(int direction){
 	for(x = 0; x < 4; x++)
 		for(y = 0; y < 4; y++)
 			if(grid.grid[pY + y][pX + x] != 0 && pieceMatrix[x][y] != 0 || ((pY + y) >= grid.numRows && pieceMatrix[x][y] != 0)){
-				PlacePiece();
 				return true;
 			}
 
@@ -237,25 +235,32 @@ void ProcessInput(){
 			MovePiece(RIGHT);
 			break;
 		case KEY_J:
+			SnapDown();
 			break;
 	}
 
-	while(GetKeyPressed() != 0){
-		inputRepeatCounter++;
-		if(inputRepeatCounter >= inputRepeatLatency){
-			switch(keycode){
-				case KEY_H:
-					MovePiece(LEFT);
-					break;
-				case KEY_L:
-					MovePiece(RIGHT);
-					break;
-				case KEY_J:
-					break;
-			}
-			inputRepeatCounter = 0;
-		}
+	inputRepeatCounter++;
+	if(inputRepeatCounter >= inputRepeatLatency){
+		switch(keycode){
+			case KEY_H:
+				MovePiece(LEFT);
+				break;
+			case KEY_L:
+				MovePiece(RIGHT);
+				break;
+			case KEY_J:
+				SnapDown();
+				break;
+		}	
+		inputRepeatCounter = 0;
 	}
+}
+
+void SnapDown(){
+	while(!DetectCollision(DOWN)){
+		pieceY++;
+	}
+	PlacePiece();
 }
 
 int main(){
@@ -271,7 +276,8 @@ int main(){
 	while(WindowShouldClose() == false){
 		if(++counter >= fallingSpeed){
 			counter = 0;
-			MovePiece(DOWN);
+			if(!MovePiece(DOWN))
+				PlacePiece();
 		}
 		// std::cout << "counter: " << counter << "\nspeed: " << speed << std::endl;
 
