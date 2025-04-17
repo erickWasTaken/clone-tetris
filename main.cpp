@@ -276,8 +276,11 @@ int main(){
 	while(WindowShouldClose() == false){
 		if(++counter >= fallingSpeed){
 			counter = 0;
-			if(!MovePiece(DOWN))
+			if(!MovePiece(DOWN)){
+				if(pieceY <= 0)
+					break;
 				PlacePiece();
+			}
 		}
 		// std::cout << "counter: " << counter << "\nspeed: " << speed << std::endl;
 
