@@ -106,13 +106,13 @@ int MovePiece(int direction){
 }
 
 void DrawFallingPiece(){
-	for(int i = 0; i < 4; i++){
-		for(int j = 0; j < 4; j++){
+	for(int x = 0; x < 4; x++){
+		for(int y = 0; y < 4; y++){
 			// grid.grid[pieceY + j][pieceX + i] = pieceMatrix[i][j];
-			if(pieceMatrix[i][j] == 0)
+			if(pieceMatrix[x][y] == 0)
 				continue;
 			else{
-				DrawRectangle((pieceX + i) * grid.cellSize + 1, (pieceY + j) * grid.cellSize +1, grid.cellSize -1, grid.cellSize -1, grid.colors[pieceMatrix[i][j]]);
+				DrawRectangle((pieceX + x) * grid.cellSize + 1, (pieceY + y) * grid.cellSize +1, grid.cellSize -1, grid.cellSize -1, grid.colors[pieceMatrix[x][y]]);
 			}
 		}
 	}
@@ -125,10 +125,10 @@ bool DetectCollision(int direction){
 
 	switch(direction){
 		case RIGHT:
-			pX++;
+			++pX;
 			break;
 		case LEFT:
-			pX--;
+			--pX;
 			break;
 		case DOWN:
 			pY++;
@@ -139,8 +139,8 @@ bool DetectCollision(int direction){
 
 	// check left boundaries
 	if(pX < 0){
-		for(x = 0; x < 4; x++)
-			for(y = 0; y < 4; y++)
+		for(x = 0; (x + pX) < 0; x++)
+			for(int y = 0; y < 4; y++)
 				if(pieceMatrix[x][y] != 0){
 					return true;
 				}
@@ -170,7 +170,7 @@ void GeneratePiece(){
 	srand(time(0));
 
 	int color = (rand() % 6) + 1; //start at 1
-	int shape = rand() % 6;
+	int shape = rand() % 7;
 
 	for(int i = 0; i < 4; i++){
 		for(int j = 0; j < 4; j++){
@@ -239,21 +239,21 @@ void ProcessInput(){
 			break;
 	}
 
-	inputRepeatCounter++;
-	if(inputRepeatCounter >= inputRepeatLatency){
-		switch(keycode){
-			case KEY_H:
-				MovePiece(LEFT);
-				break;
-			case KEY_L:
-				MovePiece(RIGHT);
-				break;
-			case KEY_J:
-				SnapDown();
-				break;
-		}	
-		inputRepeatCounter = 0;
-	}
+	// inputRepeatCounter++;
+	// if(inputRepeatCounter >= inputRepeatLatency){
+	// 	switch(keycode){
+	// 		case KEY_H:
+	// 			MovePiece(LEFT);
+	// 			break;
+	// 		case KEY_L:
+	// 			MovePiece(RIGHT);
+	// 			break;
+	// 		case KEY_J:
+	// 			SnapDown();
+	// 			break;
+	// 	}	
+	// 	inputRepeatCounter = 0;
+	// }
 }
 
 void SnapDown(){

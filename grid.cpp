@@ -10,17 +10,17 @@ Grid::Grid(){
 }
 
 void Grid::Initialize(){
-	for(int i = 0; i < numRows; i++){
-		for(int j = 0; j < numCols; j++){
-			grid[i][j] = 0;
+	for(int x = 0; x < numRows; x++){
+		for(int y = 0; y < numCols; y++){
+			grid[x][y] = 0;
 		}
 	}
 }
 
 void Grid::Print(){
-	for(int i = 0; i < numRows; i++){
-		for(int j = 0; j < numCols; j++){
-			std::cout << grid[i][j] << " ";
+	for(int x = 0; x < numRows; x++){
+		for(int y = 0; y < numCols; y++){
+			std::cout << grid[x][y] << " ";
 		}
 		std::cout << std::endl;
 	}
@@ -54,11 +54,11 @@ void Grid::Insert(int pieceX, int pieceY, int shape[4][4]){
 
 
 void Grid::Draw(){
-	for(int i = 0; i < numRows; i++){
-		for(int j = 0; j < numCols; j++){
-			int cellColor = grid[i][j];
+	for(int x = 0; x < numRows; x++){
+		for(int y = 0; y < numCols; y++){
+			int cellColor = grid[x][y];
 			
-			DrawRectangle(j * cellSize +1, i * cellSize +1, cellSize -1, cellSize -1, colors[cellColor]);
+			DrawRectangle(y * cellSize +1, x * cellSize +1, cellSize -1, cellSize -1, colors[cellColor]);
 		}
 	}
 }
