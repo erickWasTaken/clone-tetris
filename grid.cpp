@@ -39,15 +39,13 @@ std::vector<Color> Grid::GetCellColors(){
 	return {darkGray, green, red, orange, yellow, purple, cyan, blue};
 }
 
-void Grid::Insert(int pieceX, int pieceY, int shape[4][4]){
-	int x, y;
+void Grid::Insert(int pieceX, int pieceY, int shape[16]){
+	int i; 
 
-	for(x = 0; x < 4; x++){
-		for(y = 0; y < 4; y++){
-			if(grid[pieceY + y][pieceX + x] != 0)
-				continue;
-			grid[pieceY + y][pieceX + x] = shape[x][y];
-		}
+	for(i = 0; i < 16; i++){
+		if(grid[pieceY + (int)(i / 4)][pieceX + (i % 4)] != 0)
+			continue;
+		grid[pieceY + (int)(i / 4)][pieceX + (i % 4)] = shape[i];
 	}
 	Draw();
 }

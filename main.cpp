@@ -31,7 +31,7 @@ Color bgColor = {44, 44, 127, 255}; // dark blue
 Grid grid;
 int pieceX;
 int pieceY;
-int pieceMatrix[4][4];
+int pieceMatrix[16];
 	
 int counter;
 int fallingSpeed = 35;
@@ -43,49 +43,49 @@ int inputRepeatCounter = 0;
 int pieceRotation = 0;
 int shape = 0;
 
-int shapeI[4][4] = {
+int shapeI[16] = {
 	0,1,0,0,
 	0,1,0,0,
 	0,1,0,0,
 	0,1,0,0
 };
 
-int shapeT[4][4] = {
+int shapeT[16] = {
 	0,1,0,0,
 	0,1,1,0,
 	0,1,0,0,
 	0,0,0,0
 };
 
-int shapeL[4][4] = {
+int shapeL[16] = {
 	0,0,1,0,
 	1,1,1,0,
 	0,0,0,0,
 	0,0,0,0
 };
 
-int shapeL2[4][4] = {
+int shapeL2[16] = {
 	1,0,0,0,
 	1,1,1,0,
 	0,0,0,0,
 	0,0,0,0
 };
 
-int shapeS[4][4] = {
+int shapeS[16] = {
 	0,1,1,0,
 	1,1,0,0,
 	0,0,0,0,
 	0,0,0,0
 };
 
-int shapeS2[4][4] = {
+int shapeS2[16] = {
 	1,1,0,0,
 	0,1,1,0,
 	0,0,0,0,
 	0,0,0,0
 };
 
-int shapeO[4][4] = {
+int shapeO[16] = {
 	1,1,0,0,
 	1,1,0,0,
 	0,0,0,0,
@@ -118,14 +118,14 @@ int MovePiece(int direction){
 }
 
 void DrawFallingPiece(){
-	for(int x = 0; x < 4; x++){
-		for(int y = 0; y < 4; y++){
-			// grid.grid[pieceY + j][pieceX + i] = pieceMatrix[i][j];
-			if(pieceMatrix[x][y] == 0)
-				continue;
-			else{
-				DrawRectangle((pieceX + x) * grid.cellSize + 1, (pieceY + y) * grid.cellSize +1, grid.cellSize -1, grid.cellSize -1, grid.colors[pieceMatrix[x][y]]);
-			}
+	for(int i = 0; i < 16; i++){
+		if(pieceMatrix[i] == 0)
+			continue;
+		else{
+			int x = i % 4;
+			int y = (int)(i / 4);
+
+			DrawRectangle((pieceX + x) * grid.cellSize + 1, (pieceY + y) * grid.cellSize +1, grid.cellSize -1, grid.cellSize -1, grid.colors[pieceMatrix[i]]);
 		}
 	}
 }
@@ -151,28 +151,29 @@ bool DetectCollision(int direction){
 
 	// check left boundaries
 	if(pX < 0){
-		for(x = 0; (x + pX) < 0; x++)
-			for(int y = 0; y < 4; y++)
-				if(pieceMatrix[x][y] != 0){
-					return true;
-				}
+		for(int i = (0 - pX) -1; i < 16; i += 4){
+			if(pieceMatrix[i] != 0)
+				return true;
+		}
 	}
 
 	// check right boundaries
 	if(pX > grid.numCols - 4){
-		for(x = pX + 3; x >= grid.numCols; x--)
-			for(y = 0; y < 4; y++)
-				if(pieceMatrix[x - pX][y] != 0){
-					return true;
-				}
+		for(int i = 16 - (pX - (grid.numCols - 4)); i >= 0; i -= 4)
+			if(pieceMatrix[i] != 0){
+				return true;
+			}
 	}
 
 	// check bottom
-	for(x = 0; x < 4; x++)
-		for(y = 0; y < 4; y++)
-			if(grid.grid[pY + y][pX + x] != 0 && pieceMatrix[x][y] != 0 || ((pY + y) >= grid.numRows && pieceMatrix[x][y] != 0)){
-				return true;
-			}
+	for(int i = 0; i < 16; i++){
+		x = i % 4;
+		y = (int)(i / 4);
+
+		if(grid.grid[pY + y][pX + x] != 0 && pieceMatrix[i] != 0 || ((pY + y) >= grid.numRows && pieceMatrix[i] != 0)){
+			return true;
+		}
+	}
 
 	// std::cout << "collision: " << collision << "\npyy: " << (pY + y) << std::endl;
 	return false;
@@ -182,50 +183,43 @@ void GeneratePiece(){
 	int color = (rand() % 6) + 1; //start at 1
 	shape = rand() % 7;
 
-	for(int i = 0; i < 4; i++){
-		for(int j = 0; j < 4; j++){
-			switch(shape){
-				case 0:
-					pieceMatrix[j][i] = shapeI[i][j] * color;
-					break;
-				case 1:
-					pieceMatrix[j][i] = shapeL[i][j] * color;
-					break;
-				case 2:
-					pieceMatrix[j][i] = shapeL2[i][j] * color;
-					break;
-				case 3:
-					pieceMatrix[j][i] = shapeO[i][j] * color;
-					break;
-				case 4:
-					pieceMatrix[j][i] = shapeS[i][j] * color;
-					break;
-				case 5:
-					pieceMatrix[j][i] = shapeS2[i][j] * color;
-					break;
-				case 6:
-					pieceMatrix[j][i] = shapeT[i][j] * color;
-					break;
-			}
-			// std::cout << pieceMatrix[j][i] * color << ", ";
+	for(int i = 0; i < 16; i++){
+		switch(shape){
+			case 0:
+				pieceMatrix[i] = shapeI[i] * color;
+				break;
+			case 1:
+				pieceMatrix[i] = shapeL[i] * color;
+				break;
+			case 2:
+				pieceMatrix[i] = shapeL2[i] * color;
+				break;
+			case 3:
+				pieceMatrix[i] = shapeO[i] * color;
+				break;
+			case 4:
+				pieceMatrix[i] = shapeS[i] * color;
+				break;
+			case 5:
+				pieceMatrix[i] = shapeS2[i] * color;
+				break;
+			case 6:
+				pieceMatrix[i] = shapeT[i] * color;
+				break;
 		}
-		// std::cout << std::endl;
 	}
-
-	// std::cout << "color value: " << color << std::endl;
 }
 
 
 void PlacePiece(){
-	int x, y;
+	int i, y;
 	int pX = pieceX;
 	int pY = pieceY;
 
 	grid.Insert(pieceX, pieceY, pieceMatrix);
 
-	for(x = 0; x < 4; x++)
-		for(y = 0; y < 4; y++)
-			pieceMatrix[y][x] = 0;
+	for(i = 0; i < 16; i++)
+		pieceMatrix[i] = 0;
 
 	pieceX = (int)(grid.numCols / 2);
 	pieceY = 0;
@@ -283,41 +277,13 @@ void SnapDown(){
 }
 
 void RotatePiece(){
-	int temp[4][4];
-	for(int x = 0; x < 4; x++){
-		for(int y = 0; y < 4; y++){
-			temp[x][y] = pieceMatrix[x][y];
-		}
+	int temp[16];
+	for(int i = 0; i < 16; i++){
+		temp[i] = pieceMatrix[i];
 	}
 
 	switch(shape){
-		case SHAPE_O:
-			return;
-		case SHAPE_L:
-		case SHAPE_L2:
-		case SHAPE_S:
-		case SHAPE_S2:
-		case SHAPE_T:
-			pieceMatrix[0][0] = temp[2][0];
-			pieceMatrix[0][2] = temp[0][0];
-			pieceMatrix[2][2] = temp[0][2];
-			pieceMatrix[2][0] = temp[2][2];
 
-			pieceMatrix[0][1] = temp[1][0];
-			pieceMatrix[1][2] = temp[0][1];
-			pieceMatrix[2][1] = temp[1][2];
-			pieceMatrix[1][0] = temp[2][1];
-			break;
-
-		case SHAPE_I:
-			pieceMatrix[0][1] = temp[1][0];
-			
-			pieceMatrix[1][0] = temp[0][1];
-			pieceMatrix[1][2] = temp[2][1];
-			pieceMatrix[2][1] = temp[1][2];
-			pieceMatrix[1][3] = temp[3][1];
-			pieceMatrix[3][1] = temp[1][3];
-			break;
 	}
 }
 
