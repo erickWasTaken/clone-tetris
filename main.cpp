@@ -9,6 +9,14 @@
 #define DOWN 203
 #define REFRESH 0
 
+#define SHAPE_I 0
+#define SHAPE_L 1
+#define SHAPE_L2 2
+#define SHAPE_O 3
+#define SHAPE_S 4
+#define SHAPE_S2 5
+#define SHAPE_T 6
+
 int MovePiece(int direction);
 bool DetectCollision(int direction);
 void DrawFallingPiece();
@@ -16,6 +24,7 @@ void GeneratePiece();
 void PlacePiece();
 void ProcessInput();
 void SnapDown();
+void RotatePiece();
 
 Color bgColor = {44, 44, 127, 255}; // dark blue
 
@@ -30,6 +39,9 @@ int cycle = 0;
 
 int inputRepeatLatency = 5;
 int inputRepeatCounter = 0;
+
+int pieceRotation = 0;
+int shape = 0;
 
 int shapeI[4][4] = {
 	0,1,0,0,
@@ -167,10 +179,8 @@ bool DetectCollision(int direction){
 }
 
 void GeneratePiece(){
-	srand(time(0));
-
 	int color = (rand() % 6) + 1; //start at 1
-	int shape = rand() % 7;
+	shape = rand() % 7;
 
 	for(int i = 0; i < 4; i++){
 		for(int j = 0; j < 4; j++){
@@ -205,6 +215,7 @@ void GeneratePiece(){
 	// std::cout << "color value: " << color << std::endl;
 }
 
+
 void PlacePiece(){
 	int x, y;
 	int pX = pieceX;
@@ -237,6 +248,14 @@ void ProcessInput(){
 		case KEY_J:
 			SnapDown();
 			break;
+		case KEY_E:
+			pieceRotation += 3;
+			RotatePiece();
+			break;
+		case KEY_F:
+			pieceRotation++;
+			RotatePiece();
+			break;
 	}
 
 	// inputRepeatCounter++;
@@ -263,14 +282,56 @@ void SnapDown(){
 	PlacePiece();
 }
 
+void RotatePiece(){
+	int temp[4][4];
+	for(int x = 0; x < 4; x++){
+		for(int y = 0; y < 4; y++){
+			temp[x][y] = pieceMatrix[x][y];
+		}
+	}
+
+	switch(shape){
+		case SHAPE_O:
+			return;
+		case SHAPE_L:
+		case SHAPE_L2:
+		case SHAPE_S:
+		case SHAPE_S2:
+		case SHAPE_T:
+			pieceMatrix[0][0] = temp[2][0];
+			pieceMatrix[0][2] = temp[0][0];
+			pieceMatrix[2][2] = temp[0][2];
+			pieceMatrix[2][0] = temp[2][2];
+
+			pieceMatrix[0][1] = temp[1][0];
+			pieceMatrix[1][2] = temp[0][1];
+			pieceMatrix[2][1] = temp[1][2];
+			pieceMatrix[1][0] = temp[2][1];
+			break;
+
+		case SHAPE_I:
+			pieceMatrix[0][1] = temp[1][0];
+			
+			pieceMatrix[1][0] = temp[0][1];
+			pieceMatrix[1][2] = temp[2][1];
+			pieceMatrix[2][1] = temp[1][2];
+			pieceMatrix[1][3] = temp[3][1];
+			pieceMatrix[3][1] = temp[1][3];
+			break;
+	}
+}
+
 int main(){
 	InitWindow(300, 600, "Tetris clone");
+	SetConfigFlags(FLAG_WINDOW_RESIZABLE | FLAG_VSYNC_HINT);
 	SetTargetFPS(60);
 
 	grid = Grid();
 	pieceX = (int)(grid.numCols / 2);
 	pieceY = 0;
 
+	srand(time(0));
+	
 	GeneratePiece();
 
 	while(WindowShouldClose() == false){
@@ -290,6 +351,7 @@ int main(){
 		ClearBackground(bgColor);
 		grid.Draw();
 		DrawFallingPiece();
+		// DrawRectangle(0, 0, 300, 600, RED);
 
 		EndDrawing();
 	
