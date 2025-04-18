@@ -223,6 +223,7 @@ void PlacePiece(){
 
 	pieceX = (int)(grid.numCols / 2);
 	pieceY = 0;
+	pieceRotation = 0;
 
 	GeneratePiece();
 }
@@ -282,9 +283,29 @@ void RotatePiece(){
 		temp[i] = pieceMatrix[i];
 	}
 
-	switch(shape){
+	for(int i = 0; i < 16; i++){
+		int pi = 0;
+		int x = i % 4;
+		int y = (int)(i / 4);
 
+		switch(pieceRotation % 4){
+			case 0:
+				pi = y * 4 + x;
+				break;
+			case 1:
+				pi = 12 + y - (x * 4);
+				break;
+			case 2:
+				pi = 15 - (y * 4) - x;
+				break;
+			case 3:
+				pi = 3 - y + (x * 4);
+				break;
+		}
+
+		pieceMatrix[i] = temp[pi];
 	}
+	std::cout << "piece rotation: " << pieceRotation % 4 << std::endl;
 }
 
 int main(){
