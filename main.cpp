@@ -2,6 +2,8 @@
 #include "grid.hpp"
 #include <iostream>
 #include <ctime>
+#include <json/value.h>
+#include <fstream>
 
 #define RIGHT 201
 #define LEFT 160
@@ -43,6 +45,8 @@ int inputRepeatCounter = 0;
 
 int pieceRotation = 0;
 int shape = 0;
+
+int prevColor = 0;
 
 int shapeI[16] = {
 	0,1,0,0,
@@ -181,7 +185,12 @@ bool DetectCollision(int direction){
 }
 
 void GeneratePiece(){
-	int color = (rand() % 6) + 1; //start at 1
+	int color = 0;
+	do{
+		color =  (rand() % 6) + 1;
+	}while(color == prevColor);
+	prevColor = color;
+
 	shape = rand() % 7;
 
 	for(int i = 0; i < 16; i++){
@@ -338,15 +347,14 @@ void RotatePiece(){
 
 int main(){
 	InitWindow(300, 600, "Tetris clone");
-	SetConfigFlags(FLAG_WINDOW_RESIZABLE | FLAG_VSYNC_HINT);
+	// SetConfigFlags(FLAG_WINDOW_RESIZABLE | FLAG_VSYNC_HINT);
 	SetTargetFPS(60);
 
 	grid = Grid();
+	srand(time(0));
 	pieceX = (int)(grid.numCols / 2);
 	pieceY = 0;
 
-	srand(time(0));
-	
 	GeneratePiece();
 
 	while(WindowShouldClose() == false){
