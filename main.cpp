@@ -25,6 +25,7 @@ void PlacePiece();
 void ProcessInput();
 void SnapDown();
 void RotatePiece();
+void HorizontalSnap();
 
 Color bgColor = {44, 44, 127, 255}; // dark blue
 
@@ -229,6 +230,11 @@ void PlacePiece(){
 }
 
 void ProcessInput(){
+	if(IsKeyDown(KEY_K)){
+		HorizontalSnap();
+		return;
+	}
+	
 	int keycode = GetKeyPressed();
 	if(keycode == 0)
 		return;
@@ -274,7 +280,29 @@ void SnapDown(){
 	while(!DetectCollision(DOWN)){
 		pieceY++;
 	}
-	PlacePiece();
+}
+
+void HorizontalSnap(){
+	int snapDirection = 0;
+	if(IsKeyPressed(KEY_H))
+		snapDirection--;
+	if(IsKeyPressed(KEY_L))
+		snapDirection++;
+
+	switch(snapDirection){
+		case -1:
+			while(!DetectCollision(LEFT)){
+				pieceX--;
+			}
+			break;
+		case 1:
+			while(!DetectCollision(RIGHT)){
+				pieceX++;
+			}
+			break;
+		case 0:
+			return;
+	}
 }
 
 void RotatePiece(){
