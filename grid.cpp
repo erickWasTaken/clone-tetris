@@ -48,6 +48,33 @@ void Grid::Insert(int pieceX, int pieceY, int shape[16]){
 		grid[pieceY + (int)(i / 4)][pieceX + (i % 4)] = shape[i];
 	}
 	Draw();
+
+	bool remove;
+	for(int y = 0; y < numRows; y++){
+		remove = true;
+		for(int x = 0; x < numCols; x++){
+			if(grid[y][x] == 0)
+				remove = false;
+		}
+
+		if(remove){
+			RemoveLine(y);
+		}
+	}
+}
+
+void Grid::RemoveLine(int line){
+	int temp[10];
+	int i;
+	for(i = 0; i < numCols; i++){
+		temp[i] = grid[line][i];
+	}
+
+	for(i = line; i > 0; i--){
+		for(int j = 0; j < numCols; j++){
+			grid[i][j] = grid[i -1][j];
+		}
+	}
 }
 
 

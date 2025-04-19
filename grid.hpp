@@ -9,6 +9,7 @@ public:
 	void Print();
 	void Draw();
 	void Insert(int pieceX, int pieceY, int shape[16]);
+	void RemoveLine(int line);
 	int grid[20][10];
 	int numRows;
 	int numCols;

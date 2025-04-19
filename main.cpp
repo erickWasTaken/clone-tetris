@@ -3,7 +3,6 @@
 #include <iostream>
 #include <ctime>
 #include <json/value.h>
-#include <fstream>
 
 #define RIGHT 201
 #define LEFT 160
@@ -239,7 +238,7 @@ void PlacePiece(){
 }
 
 void ProcessInput(){
-	if(IsKeyDown(KEY_K)){
+	if(IsKeyDown(KEY_LEFT_SHIFT)){
 		HorizontalSnap();
 		return;
 	}
@@ -257,6 +256,7 @@ void ProcessInput(){
 			break;
 		case KEY_J:
 			SnapDown();
+			PlacePiece();
 			break;
 		case KEY_E:
 			pieceRotation += 3;
@@ -358,6 +358,8 @@ int main(){
 	GeneratePiece();
 
 	while(WindowShouldClose() == false){
+		ProcessInput();
+
 		if(++counter >= fallingSpeed){
 			counter = 0;
 			if(!MovePiece(DOWN)){
@@ -367,8 +369,6 @@ int main(){
 			}
 		}
 		// std::cout << "counter: " << counter << "\nspeed: " << speed << std::endl;
-
-		ProcessInput();
 
 		BeginDrawing();
 		ClearBackground(bgColor);
