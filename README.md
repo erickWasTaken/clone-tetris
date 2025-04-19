@@ -4,15 +4,15 @@ This project was written for educational purposes.
 
 # Controls
 ## Moving the Piece
-**H** to move Left.
-**L** to move Right.
-**J** to snap the piece down.
+- **H** to move Left.
+- **L** to move Right.
+- **J** to snap the piece down.
 
 ## Rotating the piece
-**E** to rotate anti-clockwise.
-**F** to rotate clockwise.
+- **E** to rotate anti-clockwise.
+- **F** to rotate clockwise.
 
 ## Modifiers
-**Hold L_SHIFT + H || L** to snap the piece Left or Right.
+- **Hold L_SHIFT + H || L** to snap the piece Left or Right.
 
 @erickWasTaken :)

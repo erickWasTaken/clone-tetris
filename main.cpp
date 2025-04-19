@@ -2,7 +2,6 @@
 #include "grid.hpp"
 #include <iostream>
 #include <ctime>
-#include <json/value.h>
 
 #define RIGHT 201
 #define LEFT 160
@@ -44,6 +43,7 @@ int inputRepeatCounter = 0;
 
 int pieceRotation = 0;
 int shape = 0;
+int color;
 
 int prevColor = 0;
 
@@ -186,7 +186,7 @@ bool DetectCollision(int direction){
 }
 
 void GeneratePiece(){
-	int color = 0;
+	color = 0;
 	do{
 		color =  (rand() % 6) + 1;
 	}while(color == prevColor);
@@ -236,8 +236,9 @@ void PlacePiece(){
 	pieceY = 0;
 	pieceRotation = 0;
 
-	std::cout << "score: " << score << std::endl;
+	// std::cout << "score: " << score << std::endl;
 	GeneratePiece();
+	grid.Print();
 }
 
 void ProcessInput(){
@@ -319,8 +320,33 @@ void HorizontalSnap(){
 
 void RotatePiece(){
 	int temp[16];
+	int current[16];
 	for(int i = 0; i < 16; i++){
-		temp[i] = pieceMatrix[i];
+		current[i] = pieceMatrix[i];
+
+		switch(shape){
+			case SHAPE_I:
+				temp[i] = shapeI[i];
+				break;
+			case SHAPE_L:
+				temp[i] = shapeL[i];
+				break;
+			case SHAPE_L2:
+				temp[i] = shapeL2[i];
+				break;
+			case SHAPE_O:
+				temp[i] = shapeO[i];
+				break;
+			case SHAPE_S:
+				temp[i] = shapeS[i];
+				break;
+			case SHAPE_S2:
+				temp[i] = shapeS2[i];
+				break;
+			case SHAPE_T:
+				temp[i] = shapeT[i];
+				break;
+		}
 	}
 
 	for(int i = 0; i < 16; i++){
@@ -343,14 +369,15 @@ void RotatePiece(){
 				break;
 		}
 
-		pieceMatrix[i] = temp[pi];
+		pieceMatrix[i] = temp[pi] * color;
 	}
+
 	if(DetectCollision(REFRESH)){
 		for(int i = 0; i < 16; i++)
-			pieceMatrix[i] = temp[i];
+			pieceMatrix[i] = current[i];
 		pieceRotation += 4;
 	}
-	std::cout << "piece rotation: " << pieceRotation % 4 << std::endl;
+	// std::cout << "piece rotation: " << pieceRotation % 4 << std::endl;
 }
 
 int main(){
