@@ -39,7 +39,8 @@ std::vector<Color> Grid::GetCellColors(){
 	return {darkGray, green, red, orange, yellow, purple, cyan, blue};
 }
 
-void Grid::Insert(int pieceX, int pieceY, int shape[16]){
+int Grid::Insert(int pieceX, int pieceY, int shape[16]){
+	int score = 0;
 	int i; 
 
 	for(i = 0; i < 16; i++){
@@ -59,8 +60,11 @@ void Grid::Insert(int pieceX, int pieceY, int shape[16]){
 
 		if(remove){
 			RemoveLine(y);
+			score = i * numCols;
 		}
 	}
+
+	return score;
 }
 
 void Grid::RemoveLine(int line){

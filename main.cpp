@@ -47,6 +47,8 @@ int shape = 0;
 
 int prevColor = 0;
 
+int score = 0;
+
 int shapeI[16] = {
 	0,1,0,0,
 	0,1,0,0,
@@ -225,7 +227,7 @@ void PlacePiece(){
 	int pX = pieceX;
 	int pY = pieceY;
 
-	grid.Insert(pieceX, pieceY, pieceMatrix);
+	score += grid.Insert(pieceX, pieceY, pieceMatrix);
 
 	for(i = 0; i < 16; i++)
 		pieceMatrix[i] = 0;
@@ -234,6 +236,7 @@ void PlacePiece(){
 	pieceY = 0;
 	pieceRotation = 0;
 
+	std::cout << "score: " << score << std::endl;
 	GeneratePiece();
 }
 
@@ -341,6 +344,11 @@ void RotatePiece(){
 		}
 
 		pieceMatrix[i] = temp[pi];
+	}
+	if(DetectCollision(REFRESH)){
+		for(int i = 0; i < 16; i++)
+			pieceMatrix[i] = temp[i];
+		pieceRotation += 4;
 	}
 	std::cout << "piece rotation: " << pieceRotation % 4 << std::endl;
 }
