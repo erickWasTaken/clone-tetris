@@ -15,4 +15,10 @@ This project was written for educational purposes.
 ## Modifiers
 - **Hold L_SHIFT + H || L** to snap the piece Left or Right.
 
+# Notes
+If your screen does not open properly on wayland, try running:
+```
+env -u WAYLAND_DISPLAY ./app
+```
+
 @erickWasTaken :)
