@@ -30,6 +30,7 @@ void PaintInactive();
 bool IsRowEmpty(int col);
 bool IsColumnEmpty(int row);
 void RepositionShape();
+void RemoveLine(int line);
 
 Color bgColor = {44, 44, 127, 255}; // dark blue
 
@@ -240,7 +241,27 @@ void PlacePiece(){
 	int pX = pieceX;
 	int pY = pieceY;
 
-	score += grid.Insert(pieceX, pieceY, pieceMatrix);
+	// score += grid.Insert(pieceX, pieceY, pieceMatrix);
+	for(i = 0; i < 16; i++){
+		if(grid.grid[pieceY + (int)(i / 4)][pieceX + (i % 4)] != 0)
+			continue;
+		grid.grid[pieceY + (int)(i / 4)][pieceX + (i % 4)] = pieceMatrix[i];
+	}
+
+	bool remove;
+	for(int y = 0; y < grid.numRows; y++){
+		remove = true;
+		for(int x = 0; x < grid.numCols; x++){
+			if(grid.grid[y][x] == 0)
+				remove = false;
+		}
+
+		if(remove){
+			RemoveLine(y);
+			score = i * grid.numCols;
+			fallingSpeed --;
+		}
+	}
 
 	for(i = 0; i < 16; i++)
 		pieceMatrix[i] = 0;
@@ -252,6 +273,20 @@ void PlacePiece(){
 	// std::cout << "score: " << score << std::endl;
 	GeneratePiece();
 	// grid.Print();
+}
+
+void RemoveLine(int line){
+	int temp[10];
+	int i;
+	for(i = 0; i < grid.numCols; i++){
+		temp[i] = grid.grid[line][i];
+	}
+
+	for(i = line; i > 0; i--){
+		for(int j = 0; j < grid.numCols; j++){
+			grid.grid[i][j] = grid.grid[i -1][j];
+		}
+	}
 }
 
 void ProcessInput(){
