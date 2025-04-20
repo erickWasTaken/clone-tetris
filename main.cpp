@@ -283,9 +283,9 @@ void ProcessInput(){
 			pieceRotation++;
 			RotatePiece();
 			break;
-		case KEY_LEFT_CONTROL:
-			GeneratePiece();
-			break;
+		// case KEY_LEFT_CONTROL:
+		// 	GeneratePiece();
+		// 	break;
 	}
 
 	// inputRepeatCounter++;
@@ -470,6 +470,8 @@ int main(){
 	// SetConfigFlags(FLAG_WINDOW_RESIZABLE | FLAG_VSYNC_HINT);
 	SetTargetFPS(60);
 
+	Font font = LoadFontEx("x10y12pxDonguriDuel.ttf", 16, NULL, 0);
+
 	grid = Grid();
 	srand(time(0));
 	pieceX = (int)(grid.numCols / 2);
@@ -495,6 +497,12 @@ int main(){
 		ClearBackground(bgColor);
 		grid.Draw();
 		DrawFallingPiece();
+		DrawTextEx(font, "Score: ", {180, 20}, 16, 2, WHITE);
+		
+		char scoreText[10];
+		sprintf(scoreText, "%d", score);
+		
+		DrawTextEx(font, scoreText, {240, 20}, 16, 2, WHITE);
 		// DrawRectangle(0, 0, 300, 600, RED);
 
 		EndDrawing();
