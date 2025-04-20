@@ -26,6 +26,9 @@ void ProcessInput();
 void SnapDown();
 void RotatePiece();
 void HorizontalSnap();
+void PaintInactive();
+bool IsRowEmpty(int col);
+bool IsColumnEmpty(int row);
 
 Color bgColor = {44, 44, 127, 255}; // dark blue
 
@@ -219,6 +222,14 @@ void GeneratePiece(){
 				break;
 		}
 	}
+	PaintInactive();
+}
+
+void PaintInactive(){
+	for(int i = 0; i < 16; i++)
+		if(pieceMatrix[i] == 0)
+			pieceMatrix[i] = 8;
+
 }
 
 
@@ -269,6 +280,9 @@ void ProcessInput(){
 		case KEY_F:
 			pieceRotation++;
 			RotatePiece();
+			break;
+		case KEY_LEFT_CONTROL:
+			GeneratePiece();
 			break;
 	}
 
@@ -372,12 +386,66 @@ void RotatePiece(){
 		pieceMatrix[i] = temp[pi] * color;
 	}
 
+	for(int i = 0; i < 4; i++){
+		if(IsRowEmpty(i)){
+			for(int y = i; y <= 3; y++){
+				for(int x = 0; x < 4; x++){
+					pieceMatrix[y * 4 + x] = pieceMatrix[(y + 1) * 4 + x];
+				}
+			}
+			for(int x = 0; x < 4; x++)
+				pieceMatrix[3 * 4 + x] = 0;
+		}
+	}
+
+	for(int i = 0; i < 4; i++){
+		if(IsColumnEmpty(i)){
+			for(int x = i; x <= 3; x++){
+				for(int y = 0; y < 4; y++){
+					pieceMatrix[y * 4 + x] = pieceMatrix[y * 4 + x + 1];
+				}
+			}
+
+			for(int y = 0; y < 4; y++)
+				pieceMatrix[y * 4 + 3] = 0;
+
+		}
+
+	}
+
 	if(DetectCollision(REFRESH)){
 		for(int i = 0; i < 16; i++)
 			pieceMatrix[i] = current[i];
 		pieceRotation += 4;
 	}
 	// std::cout << "piece rotation: " << pieceRotation % 4 << std::endl;
+	PaintInactive();
+}
+
+bool IsRowEmpty(int col){
+	bool empty = true;
+	for(int i = 0; i < 4; i++){
+		int j = col * 4 + i;
+		if(pieceMatrix[j] != 0){
+			empty = false;
+			break;
+		}
+	}
+
+	return empty;
+}
+
+bool IsColumnEmpty(int row){
+	bool empty = true;
+	for(int i = 0; i < 4; i++){
+		int k = i * 4 + row;
+		if(pieceMatrix[k] != 0){
+			empty = false;
+			break;
+		}
+	}
+
+	return empty;
 }
 
 int main(){
@@ -388,21 +456,22 @@ int main(){
 	grid = Grid();
 	srand(time(0));
 	pieceX = (int)(grid.numCols / 2);
-	pieceY = 0;
+	pieceY = (int)(grid.numRows / 2);
+	// pieceY = 0;
 
 	GeneratePiece();
 
 	while(WindowShouldClose() == false){
 		ProcessInput();
 
-		if(++counter >= fallingSpeed){
-			counter = 0;
-			if(!MovePiece(DOWN)){
-				if(pieceY <= 0)
-					break;
-				PlacePiece();
-			}
-		}
+		// if(++counter >= fallingSpeed){
+		// 	counter = 0;
+		// 	if(!MovePiece(DOWN)){
+		// 		if(pieceY <= 0)
+		// 			break;
+		// 		PlacePiece();
+		// 	}
+		// }
 		// std::cout << "counter: " << counter << "\nspeed: " << speed << std::endl;
 
 		BeginDrawing();

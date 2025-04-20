@@ -17,7 +17,7 @@ This project was written for educational purposes.
 
 # Notes
 If your screen does not open properly on wayland, try running:
-```
+```bash
 env -u WAYLAND_DISPLAY ./app
 ```
 

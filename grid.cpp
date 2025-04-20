@@ -35,8 +35,9 @@ std::vector<Color> Grid::GetCellColors(){
 	Color purple = {128, 0, 128, 255};
 	Color cyan = {0, 255, 255, 255};
 	Color blue = {0, 0, 255, 255};
+	Color white = {255, 255, 255, 255};
 
-	return {darkGray, green, red, orange, yellow, purple, cyan, blue};
+	return {darkGray, green, red, orange, yellow, purple, cyan, blue, white};
 }
 
 int Grid::Insert(int pieceX, int pieceY, int shape[16]){
