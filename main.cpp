@@ -189,11 +189,11 @@ bool DetectCollision(int direction){
 }
 
 void GeneratePiece(){
-	color = 0;
-	do{
-		color =  (rand() % 6) + 1;
-	}while(color == prevColor);
-	prevColor = color;
+	color = 1;
+	// do{
+	// 	color =  (rand() % 6) + 1;
+	// }while(color == prevColor);
+	// prevColor = color;
 
 	shape = rand() % 7;
 
@@ -383,34 +383,32 @@ void RotatePiece(){
 				break;
 		}
 
-		pieceMatrix[i] = temp[pi] * color;
+		// pieceMatrix[i] = temp[pi] * color;
+		pieceMatrix[i] = temp[pi];
 	}
 
-	for(int i = 0; i < 4; i++){
+	for(int i = 0; i < 3; i++){
 		if(IsRowEmpty(i)){
-			for(int y = i; y <= 3; y++){
-				for(int x = 0; x < 4; x++){
-					pieceMatrix[y * 4 + x] = pieceMatrix[(y + 1) * 4 + x];
-				}
+			for(int j = 0; j < 4; j++){
+				// int k = i * 4 + j;
+				pieceMatrix[i * 4 + j] = pieceMatrix[(i + 1) * 4 + j];
+				pieceMatrix[(i + 1) * 4 + j] = 0;
 			}
-			for(int x = 0; x < 4; x++)
-				pieceMatrix[3 * 4 + x] = 0;
+			continue;
 		}
+		break;
 	}
 
-	for(int i = 0; i < 4; i++){
+	for(int i = 0; i < 3; i++){
 		if(IsColumnEmpty(i)){
-			for(int x = i; x <= 3; x++){
-				for(int y = 0; y < 4; y++){
-					pieceMatrix[y * 4 + x] = pieceMatrix[y * 4 + x + 1];
-				}
+			for(int j = 0; j < 4; j++){
+				// int k = j * 4 + i;
+				pieceMatrix[j * 4 + i] = pieceMatrix[j * 4 + i + 1];
+				pieceMatrix[j * 4 + i + 1] = 0;
 			}
-
-			for(int y = 0; y < 4; y++)
-				pieceMatrix[y * 4 + 3] = 0;
-
+			continue;
 		}
-
+		break;
 	}
 
 	if(DetectCollision(REFRESH)){
@@ -422,11 +420,11 @@ void RotatePiece(){
 	PaintInactive();
 }
 
-bool IsRowEmpty(int col){
+bool IsRowEmpty(int row){
 	bool empty = true;
 	for(int i = 0; i < 4; i++){
-		int j = col * 4 + i;
-		if(pieceMatrix[j] != 0){
+		int j = row * 4 + i;
+		if(pieceMatrix[j] != 0 && pieceMatrix[j] != 8){
 			empty = false;
 			break;
 		}
@@ -435,11 +433,11 @@ bool IsRowEmpty(int col){
 	return empty;
 }
 
-bool IsColumnEmpty(int row){
+bool IsColumnEmpty(int col){
 	bool empty = true;
 	for(int i = 0; i < 4; i++){
-		int k = i * 4 + row;
-		if(pieceMatrix[k] != 0){
+		int k = i * 4 + col;
+		if(pieceMatrix[k] != 0 && pieceMatrix[k] != 8){
 			empty = false;
 			break;
 		}
