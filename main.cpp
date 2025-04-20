@@ -29,6 +29,7 @@ void HorizontalSnap();
 void PaintInactive();
 bool IsRowEmpty(int col);
 bool IsColumnEmpty(int row);
+void RepositionShape();
 
 Color bgColor = {44, 44, 127, 255}; // dark blue
 
@@ -189,11 +190,11 @@ bool DetectCollision(int direction){
 }
 
 void GeneratePiece(){
-	color = 1;
-	// do{
-	// 	color =  (rand() % 6) + 1;
-	// }while(color == prevColor);
-	// prevColor = color;
+	// color = 1;
+	do{
+		color =  (rand() % 6) + 1;
+	}while(color == prevColor);
+	prevColor = color;
 
 	shape = rand() % 7;
 
@@ -222,7 +223,8 @@ void GeneratePiece(){
 				break;
 		}
 	}
-	PaintInactive();
+	// PaintInactive();
+	RepositionShape();
 }
 
 void PaintInactive(){
@@ -249,7 +251,7 @@ void PlacePiece(){
 
 	// std::cout << "score: " << score << std::endl;
 	GeneratePiece();
-	grid.Print();
+	// grid.Print();
 }
 
 void ProcessInput(){
@@ -383,33 +385,18 @@ void RotatePiece(){
 				break;
 		}
 
-		// pieceMatrix[i] = temp[pi] * color;
-		pieceMatrix[i] = temp[pi];
+		pieceMatrix[i] = temp[pi] * color;
+		// pieceMatrix[i] = temp[pi];
 	}
 
-	for(int i = 0; i < 3; i++){
-		if(IsRowEmpty(i)){
-			for(int j = 0; j < 4; j++){
-				// int k = i * 4 + j;
-				pieceMatrix[i * 4 + j] = pieceMatrix[(i + 1) * 4 + j];
-				pieceMatrix[(i + 1) * 4 + j] = 0;
-			}
-			continue;
-		}
-		break;
-	}
-
-	for(int i = 0; i < 3; i++){
-		if(IsColumnEmpty(i)){
-			for(int j = 0; j < 4; j++){
-				// int k = j * 4 + i;
-				pieceMatrix[j * 4 + i] = pieceMatrix[j * 4 + i + 1];
-				pieceMatrix[j * 4 + i + 1] = 0;
-			}
-			continue;
-		}
-		break;
-	}
+	// for(int i = 0; i < 4; i++){
+	// 	for(int j = 0; j < 4; j++){
+	// 		std::cout << pieceMatrix[i * 4 + j] << ", ";
+	// 	}
+	// 	std::cout << std::endl;
+	// }
+	
+	RepositionShape();
 
 	if(DetectCollision(REFRESH)){
 		for(int i = 0; i < 16; i++)
@@ -417,7 +404,7 @@ void RotatePiece(){
 		pieceRotation += 4;
 	}
 	// std::cout << "piece rotation: " << pieceRotation % 4 << std::endl;
-	PaintInactive();
+	// PaintInactive();
 }
 
 bool IsRowEmpty(int row){
@@ -446,6 +433,38 @@ bool IsColumnEmpty(int col){
 	return empty;
 }
 
+void RepositionShape(){
+	while(IsRowEmpty(0)){
+		for(int i = 0; i < 3; i++){
+			// std::cout << i << std::endl;
+			if(IsRowEmpty(i)){
+				for(int j = 0; j < 4; j++){
+					// int k = i * 4 + j;
+					pieceMatrix[i * 4 + j] = pieceMatrix[(i + 1) * 4 + j];
+					pieceMatrix[(i + 1) * 4 + j] = 0;
+				}
+				continue;
+			}
+			break;
+		}
+	}
+
+	while(IsColumnEmpty(0)){
+		for(int i = 0; i < 3; i++){
+			// std::cout << i << std::endl;
+			if(IsColumnEmpty(i)){
+				for(int j = 0; j < 4; j++){
+					// int k = j * 4 + i;
+					pieceMatrix[j * 4 + i] = pieceMatrix[j * 4 + i + 1];
+					pieceMatrix[j * 4 + i + 1] = 0;
+				}
+				continue;
+			}
+			break;
+		}
+	}
+}
+
 int main(){
 	InitWindow(300, 600, "Tetris clone");
 	// SetConfigFlags(FLAG_WINDOW_RESIZABLE | FLAG_VSYNC_HINT);
@@ -454,22 +473,22 @@ int main(){
 	grid = Grid();
 	srand(time(0));
 	pieceX = (int)(grid.numCols / 2);
-	pieceY = (int)(grid.numRows / 2);
-	// pieceY = 0;
+	// pieceY = (int)(grid.numRows / 2);
+	pieceY = 0;
 
 	GeneratePiece();
 
 	while(WindowShouldClose() == false){
 		ProcessInput();
 
-		// if(++counter >= fallingSpeed){
-		// 	counter = 0;
-		// 	if(!MovePiece(DOWN)){
-		// 		if(pieceY <= 0)
-		// 			break;
-		// 		PlacePiece();
-		// 	}
-		// }
+		if(++counter >= fallingSpeed){
+			counter = 0;
+			if(!MovePiece(DOWN)){
+				if(pieceY <= 0)
+					break;
+				PlacePiece();
+			}
+		}
 		// std::cout << "counter: " << counter << "\nspeed: " << speed << std::endl;
 
 		BeginDrawing();

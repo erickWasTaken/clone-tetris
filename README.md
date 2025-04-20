@@ -21,4 +21,8 @@ If your screen does not open properly on wayland, try running:
 env -u WAYLAND_DISPLAY ./app
 ```
 
+# Future improvements
+- Load piece shapes and game settings from a .json file
+- Draw elements using meshes and shaders
+
 @erickWasTaken :)
